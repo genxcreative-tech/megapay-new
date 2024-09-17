@@ -1,60 +1,52 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'web_view_Screen.dart'; // Import the WebView Screen you created
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class MobileRechargeScreen extends StatefulWidget {
+  const MobileRechargeScreen({super.key});
+
   @override
-  _MobileRechargeScreenState createState() => _MobileRechargeScreenState();
+  State<MobileRechargeScreen> createState() => _MobileRechargeScreenState();
 }
 
 class _MobileRechargeScreenState extends State<MobileRechargeScreen> {
   final TextEditingController _mobileController = TextEditingController();
+  List<String> _operators = [];
+  Map<String, String> _operatorMap = {};
+  String? _selectedOperator;
   bool _isLoading = false;
 
-  // Method to find operator and handle redirection
-  Future<void> _findOperator() async {
-    const String apiUrl = 'https://auth.scrizapay.in/api/plan/v1/find-operator';
-    const String apiToken = 'gOb9DS2Ee4auV6UzG9ImUk9QGTXvvzu0TXex';
-    final String mobileNumber = _mobileController.text;
-
+  Future<void> _findProvider() async {
     setState(() {
       _isLoading = true;
     });
 
-    try {
-      final response = await http.post(
-        Uri.parse(apiUrl),
-        body: {
-          'api_token': apiToken,
-          'mobile_number': mobileNumber,
-        },
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      );
+    final response = await http.get(Uri.parse('https://api.RechargeExchange.com/API.asmx/OperatorList'));
 
-      if (response.statusCode == 200) {
-        // Handle success if the API returns operators (if applicable)
-        final data = jsonDecode(response.body);
-        // Assuming you are using 'operators' from the API response
-      } else if (response.statusCode == 302) {
-        // Handle redirection to a new URL
-        final redirectUrl = response.headers['location']; // Get the redirect URL
-        if (redirectUrl != null) {
-          // Navigate to the WebViewScreen with the redirect URL
-         Get.to(WebViewPage(url: redirectUrl));
-        }
-      } else {
-        print('Error: ${response.statusCode}');
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonResponse = jsonDecode(response.body);
+      final List<String> operators = [];
+      final Map<String, String> operatorMap = {};
+
+      // Parse the JSON response
+      for (var item in jsonResponse) {
+        final operator = item['Operator'];
+        final opCode = item['OpCode'];
+        operators.add(operator);
+        operatorMap[operator] = opCode;
       }
-    } catch (e) {
-      print('Exception: $e');
-    } finally {
+
+      setState(() {
+        _operators = operators;
+        _operatorMap = operatorMap;
+        _isLoading = false;
+      });
+    } else {
+      // Handle errors
       setState(() {
         _isLoading = false;
       });
+      // You can show an error message or handle the error
     }
   }
 
@@ -62,39 +54,49 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Mobile Recharge'),
+        title: const Text('Mobile Recharge'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(
-              'Enter Mobile Number',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          children: [
+            TextField(
+              controller: _mobileController,
+              decoration: const InputDecoration(
+                labelText: 'Enter Mobile Number',
+                border: OutlineInputBorder(),
+              ),
+              keyboardType: TextInputType.phone,
             ),
-            SizedBox(height: 20),
-            _buildMobileNumberField(),
-            SizedBox(height: 20),
-            _isLoading
-                ? Center(child: CircularProgressIndicator())
-                : ElevatedButton(
-                    onPressed: _findOperator,
-                    child: Text('Find Operator'),
-                  ),
+            const SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: _findProvider,
+              child: const Text('Find Provider'),
+            ),
+            const SizedBox(height: 16.0),
+            if (_isLoading)
+              const CircularProgressIndicator()
+            else if (_operators.isNotEmpty)
+              DropdownButton<String>(
+                value: _selectedOperator,
+                hint: const Text('Select provider'),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedOperator = newValue;
+                  });
+                },
+                items: _operators.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              )
+            else
+              const Text(''),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildMobileNumberField() {
-    return TextField(
-      controller: _mobileController,
-      keyboardType: TextInputType.phone,
-      decoration: InputDecoration(
-        labelText: 'Mobile Number',
-        border: OutlineInputBorder(),
       ),
     );
   }

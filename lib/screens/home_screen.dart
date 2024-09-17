@@ -10,6 +10,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int selectedIndex = 0;
+
+  onItemTap(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,29 +49,107 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.settings, color: Colors.white),
+            icon: const Icon(Icons.qr_code, color: Colors.white),
             onPressed: () {
-              // Action for settings
+              // Action for QR code scanner
             },
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: ListView(
-          children: <Widget>[
-            _buildServiceTile(context, 'Mobile Recharge', Icons.phone_android, Colors.orange, () => Get.to(MobileRechargeScreen())),
-            _buildServiceTile(context, 'TV Recharge', Icons.tv, Colors.blue, (){}),
-            _buildServiceTile(context, 'Internet Services', Icons.wifi, Colors.green, (){}),
-            _buildServiceTile(context, 'Gas Services', Icons.local_fire_department, Colors.red, (){}),
-            _buildServiceTile(context, 'Electricity Bill', Icons.lightbulb_outline, Colors.yellow.shade700, (){}),
-          ],
-        ),
+      body: ListView(
+        children: <Widget>[
+          // Balance Section styled like Paytm
+          Container(
+            height: Get.height / 8,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.blue, Colors.purple],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 15, top: 10),
+              child: Row(
+                children: [
+                  const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Wallet Balance",
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        "₹0.00", // You can replace this with dynamic value
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 15),
+                    child: Column(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.add, color: Colors.white, size: 30),
+                          onPressed: () {
+                            // Action for adding money to wallet
+                          },
+                        ),
+                        const Text(
+                          "Add Money",
+                          style: TextStyle(color: Colors.white),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 20),
+
+          // Services Section
+          GridView.count(
+            crossAxisCount: 3,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            childAspectRatio: 1,
+            padding: const EdgeInsets.all(10),
+            children: [
+              _buildServiceTile(context, 'Mobile Recharge', Icons.phone_android, Colors.orange, () => Get.to(const MobileRechargeScreen())),
+              _buildServiceTile(context, 'TV Recharge', Icons.tv, Colors.blue, () {}),
+              _buildServiceTile(context, 'Internet Services', Icons.wifi, Colors.green, () {}),
+              _buildServiceTile(context, 'Gas Services', Icons.local_fire_department, Colors.red, () {}),
+              _buildServiceTile(context, 'Electricity Bill', Icons.lightbulb_outline, Colors.yellow.shade700, () {}),
+              _buildServiceTile(context, 'Flight Booking', Icons.flight, Colors.purple, () {}),
+            ],
+          ),
+        ],
+      ),
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: selectedIndex,
+        onDestinationSelected: onItemTap,
+        destinations: const [
+          NavigationDestination(icon: Icon(Icons.home), label: "Home"),
+          NavigationDestination(icon: Icon(Icons.dashboard), label: "Dashboard"),
+          NavigationDestination(icon: Icon(Icons.history), label: "History"),
+          NavigationDestination(icon: Icon(Icons.person), label: "Profile"),
+        ],
       ),
     );
   }
 
-  // Helper method to build a ListTile styled service card
+  // Helper method to build a GridTile styled service card
   Widget _buildServiceTile(BuildContext context, String title, IconData icon, Color iconColor, void Function()? onTap) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -75,21 +161,24 @@ class _HomeScreenState extends State<HomeScreen> {
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(15),
-          child: ListTile(
-            subtitle: Text("Tap to continue..."),
-            leading: CircleAvatar(
-              backgroundColor: iconColor,
-              radius: 25,
-              child: Icon(icon, color: Colors.white, size: 30),
-            ),
-            title: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                backgroundColor: iconColor,
+                radius: 30,
+                child: Icon(icon, color: Colors.white, size: 35),
               ),
-            ),
-            trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
+              const SizedBox(height: 8),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ),
         ),
       ),

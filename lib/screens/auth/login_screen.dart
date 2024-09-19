@@ -35,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
         password: passwordController.text.trim(),
       );
       // Navigate to home screen or wherever you want after successful login
-      Get.to(const HomeScreen());
+      Get.offAll(const HomeScreen());
     } on FirebaseAuthException catch (e) {
       Get.snackbar('Login Failed', e.message.toString(), snackPosition: SnackPosition.BOTTOM);
       
@@ -46,9 +46,9 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.blue.shade800, Colors.purple.shade600],
+            colors: [Colors.blue, Colors.indigo],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -168,8 +168,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.white, backgroundColor: Colors.yellow.shade700,
-        minimumSize: const Size(double.infinity, 48),
+        foregroundColor: Colors.white, backgroundColor: Colors.orange,
+        minimumSize: const Size(double.infinity, 56),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -177,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
       onPressed: onPressed,
       child: Text(
         text,
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       ),
     );
   }

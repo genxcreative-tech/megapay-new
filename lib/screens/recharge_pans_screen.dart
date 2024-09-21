@@ -4,7 +4,10 @@ import 'package:megapay_new/screens/payment/payment_screen.dart';
 
 class RechargePlansScreen extends StatefulWidget {
   String optName;
-  RechargePlansScreen({super.key, required this.optName});
+  String opCode;
+  String mobileNumber;
+   final String walletBalance;
+  RechargePlansScreen({super.key, required this.optName, required this.walletBalance, required this.opCode, required this.mobileNumber});
 
   @override
   _RechargePlansScreenState createState() => _RechargePlansScreenState();
@@ -67,7 +70,7 @@ class _RechargePlansScreenState extends State<RechargePlansScreen> {
     }
 
     // Navigate to PaymentScreen with the final amount
-    Get.to(PaymentScreen(price: amountToPay));
+    Get.to(PaymentScreen(price: amountToPay, walletBalance: widget.walletBalance, opCode: widget.opCode, mobileNumber: widget.mobileNumber,));
   }
 
   @override
@@ -86,15 +89,15 @@ class _RechargePlansScreenState extends State<RechargePlansScreen> {
       body: Column(
         children: [
           //------Selected Operator Name-------------//
-          // Align(
-          //     alignment: Alignment.centerLeft,
-          //     child: Padding(
-          //       padding: const EdgeInsets.only(top: 20, left: 20),
-          //       child: Text(
-          //         "Operator:  ${widget.optName}",
-          //         style: const TextStyle(fontSize: 22),
-          //       ),
-          //     )),
+          Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 20, left: 20),
+                child: Text(
+                  "Operator:  ${widget.optName}",
+                  style: const TextStyle(fontSize: 22),
+                ),
+              )),
           //---------Enter Amount------//
           Padding(
             padding:  EdgeInsets.only(left: 20, right: 20, top: 20),
@@ -136,27 +139,28 @@ class _RechargePlansScreenState extends State<RechargePlansScreen> {
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(12.0),
-              itemCount: rechargePlans.length,
+              itemCount: 1,
               itemBuilder: (context, index) {
                 return Column(
                   children: [
-                    ListTile(
-                      onTap: () => onPlanSelect(index),
-                      title: Text(
-                        '${rechargePlans[index]['planName']} - ${rechargePlans[index]['price']}',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      subtitle: Text(
-                        rechargePlans[index]['details']!,
-                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                      ),
-                      trailing: selectedPlanIndex == index
-                          ? const Icon(Icons.check_circle, color: Colors.green)
-                          : const Icon(Icons.radio_button_unchecked),
-                    ),
+                    Text("No Plans Available Right Now"),
+                    // ListTile(
+                    //   onTap: () => onPlanSelect(index),
+                    //   title: Text(
+                    //     '${rechargePlans[index]['planName']} - ${rechargePlans[index]['price']}',
+                    //     style: const TextStyle(
+                    //       fontSize: 18,
+                    //       fontWeight: FontWeight.bold,
+                    //     ),
+                    //   ),
+                    //   subtitle: Text(
+                    //     rechargePlans[index]['details']!,
+                    //     style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                    //   ),
+                    //   trailing: selectedPlanIndex == index
+                    //       ? const Icon(Icons.check_circle, color: Colors.green)
+                    //       : const Icon(Icons.radio_button_unchecked),
+                    // ),
                     Divider()
                   ],
                 );

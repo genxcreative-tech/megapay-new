@@ -3,10 +3,12 @@ import 'package:http/http.dart' as http;
 
 class ApiService {
   final String baseUrl = "https://api.RechargeExchange.com/API.asmx";
+  final String apiToken = "PiGS3Zg57xF9q52AoTZw";
+  final int userId = 12959;
 
   // 1. Transaction API
-  Future<Map<String, dynamic>?> makeTransaction(String userId, String token, String opCode, String mobileNo, String amount, String transId) async {
-    String url = "$baseUrl/Transaction?userid=$userId&token=$token&opcode=$opCode&number=$mobileNo&amount=$amount&transid=$transId";
+  Future<Map<String, dynamic>?> makeTransaction(String opCode, String mobileNo, String amount, String transId) async {
+    String url = "$baseUrl/Transaction?userid=$userId&token=$apiToken&opcode=$opCode&number=$mobileNo&amount=$amount&transid=$transId";
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
@@ -17,20 +19,22 @@ class ApiService {
   }
 
   // 2. Balance API
-  Future<Map<String, dynamic>?> checkBalance(String userId, String token) async {
-    String url = "https://status.rechargeexchange.com/API.asmx/BalanceNew?userid=$userId&token=$token";
+  Future<Map<String, dynamic>?> checkBalance() async {
+    String url = "https://status.rechargeexchange.com/API.asmx/BalanceNew?userid=$userId&token=$apiToken";
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
+      
       return json.decode(response.body);
+      
     } else {
       throw Exception('Failed to fetch balance');
     }
   }
 
   // 3. Transaction Status API
-  Future<Map<String, dynamic>?> checkTransactionStatus(String userId, String token, String transId) async {
-    String url = "https://status.rechargeexchange.com/API.asmx/TransactionStatus?userid=$userId&token=$token&transid=$transId";
+  Future<Map<String, dynamic>?> checkTransactionStatus(String transId) async {
+    String url = "https://status.rechargeexchange.com/API.asmx/TransactionStatus?userid=$userId&token=$apiToken&transid=$transId";
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
@@ -41,8 +45,8 @@ class ApiService {
   }
 
   // 4. Complaint API
-  Future<Map<String, dynamic>?> submitComplaint(String userId, String token, String referenceId, String remark) async {
-    String url = "$baseUrl/Complain?userid=$userId&token=$token&referenceid=$referenceId&remark=$remark";
+  Future<Map<String, dynamic>?> submitComplaint(String referenceId, String remark) async {
+    String url = "$baseUrl/Complain?userid=$userId&token=$apiToken&referenceid=$referenceId&remark=$remark";
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {

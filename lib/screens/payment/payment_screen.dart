@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:megapay_new/controllers/api_controller.dart';
 import 'package:megapay_new/screens/payment/payment_declined_screen.dart';
 import 'package:megapay_new/screens/payment/payment_done_screen.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
 class PaymentScreen extends StatefulWidget {
   final String price;
-  const PaymentScreen({super.key, required this.price});
+  final String opCode;
+  final String mobileNumber;
+  final String walletBalance;
+  const PaymentScreen({super.key, required this.price, required this.walletBalance, required this.opCode, required this.mobileNumber});
 
   @override
   _PaymentScreenState createState() => _PaymentScreenState();
@@ -18,11 +22,63 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   // List of payment options
   final List<Map<String, dynamic>> paymentMethods = [
-    {'method': 'Credit Card', 'icon': HugeIcons.strokeRoundedCreditCard},
+    
     {'method': 'Debit Card', 'icon': HugeIcons.strokeRoundedCardExchange01},
     {'method': 'UPI', 'icon': HugeIcons.strokeRoundedQrCode},
     {'method': 'Paytm', 'icon': HugeIcons.strokeRoundedWallet01},
   ];
+
+  // Method to show a loading dialog with CircularProgressIndicator
+  void showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent closing dialog by tapping outside
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          child: const Padding(
+            padding: EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 20),
+                Text("Processing your payment...", style: TextStyle(fontSize: 18)),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  //-----------Payment-Func-----------//
+   Future<void> makeTransaction() async {
+    // Show loading dialog
+    showLoadingDialog(context);
+    String transactionId = DateTime.now().millisecondsSinceEpoch.toString(); // Example: '1633019176000'
+
+
+    try {
+      final response = await ApiService().makeTransaction(widget.opCode, widget.mobileNumber, widget.price, transactionId);
+      print(response);
+
+      // Dismiss the loading dialog
+      Navigator.pop(context);
+
+      if (response != null && response['status'] == 'SUCCESS') {
+        // Route to PaymentDoneScreen if transaction is successful
+        Get.to(const PaymentDoneScreen());
+      } else {
+        // Route to PaymentDeclinedScreen if transaction failed
+        Get.to(const PaymentDeclinedScreen());
+      }
+    } catch (e) {
+      // In case of an exception, dismiss the dialog and show the declined screen
+      Navigator.pop(context);
+      Get.to(const PaymentDeclinedScreen());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +127,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                      Icon(Icons.currency_rupee),
+                      const Icon(Icons.currency_rupee),
                       GradientText(
                         "${widget.price}.00",
                         style: const TextStyle(
@@ -105,18 +161,19 @@ class _PaymentScreenState extends State<PaymentScreen> {
           ),
           const SizedBox(height: 10),
           // Payment Methods List
-          Column(
-            children: paymentMethods
-                .asMap()
-                .entries
-                .map((entry) => _buildPaymentTile(
-                      context,
-                      entry.value['method'],
-                      entry.value['icon'],
-                      entry.key,
-                    ))
-                .toList(),
-          ),
+          _walletPaymentTile(context, "Wallet", HugeIcons.strokeRoundedWallet01, widget.walletBalance,0),
+          // Column(
+          //   children: paymentMethods
+          //       .asMap()
+          //       .entries
+          //       .map((entry) => _buildPaymentTile(
+          //             context,
+          //             entry.value['method'],
+          //             entry.value['icon'],
+          //             entry.key,
+          //           ))
+          //       .toList(),
+          // ),
           const SizedBox(height: 20),
           // Proceed to Pay Button
           ElevatedButton(
@@ -142,12 +199,49 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
+  Widget _walletPaymentTile(BuildContext context,
+    String title,
+    IconData icon,
+    String subtitle,
+    int index,){
+    return  InkWell(
+            onTap: () {
+              setState(() {
+                selectedPaymentMethod = index;
+              });
+            },
+            borderRadius: BorderRadius.circular(15),
+            child: ListTile(
+              
+              leading: CircleAvatar(
+                backgroundColor: selectedPaymentMethod == index
+                    ? Colors.blue
+                    : Colors.grey[300],
+                radius: 25,
+                child: Icon(icon, color: Colors.white, size: 30),
+              ),
+              title: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              subtitle: Text("₹${subtitle}"),
+              trailing: selectedPaymentMethod == index
+                  ? const Icon(Icons.check_circle, color: Colors.blue)
+                  : const Icon(Icons.circle_outlined, color: Colors.grey),
+            ),
+          );
+  }
+
   // Helper method to build a payment method tile
   Widget _buildPaymentTile(
     BuildContext context,
     String title,
     IconData icon,
     int index,
+    
   ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -161,6 +255,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
             },
             borderRadius: BorderRadius.circular(15),
             child: ListTile(
+              
               leading: CircleAvatar(
                 backgroundColor: selectedPaymentMethod == index
                     ? Colors.blue
@@ -180,7 +275,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   : const Icon(Icons.circle_outlined, color: Colors.grey),
             ),
           ),
-          Divider()
+          const Divider()
         ],
       ),
     );
@@ -192,17 +287,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
     // Display selected method
     Get.snackbar(
       "Payment",
-      "You selected $selectedMethod. Processing...",
+      "You selected Wallet. Processing...",
       snackPosition: SnackPosition.BOTTOM,
       backgroundColor: Colors.blue.withOpacity(0.8),
       colorText: Colors.white,
     );
+    makeTransaction();
 
     // Example logic: Redirect to declined screen if method is not Paytm
-    if (selectedMethod != "Paytm") {
-      Get.to(const PaymentDeclinedScreen());
-    }else{
-      Get.to(const PaymentDoneScreen());
-    }
+   
+    
   }
 }

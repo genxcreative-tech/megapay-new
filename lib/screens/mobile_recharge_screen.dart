@@ -6,11 +6,11 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:megapay_new/screens/payment/payment_screen.dart';
 import 'package:megapay_new/screens/select_operator_screen.dart';
 
-
 import 'recharge_pans_screen.dart';
 
 class MobileRechargeScreen extends StatefulWidget {
-  const MobileRechargeScreen({super.key});
+  final String walletBalance;
+  const MobileRechargeScreen({super.key, required this.walletBalance});
 
   @override
   State<MobileRechargeScreen> createState() => _MobileRechargeScreenState();
@@ -19,10 +19,20 @@ class MobileRechargeScreen extends StatefulWidget {
 class _MobileRechargeScreenState extends State<MobileRechargeScreen> {
   final TextEditingController _mobileController = TextEditingController();
   List<String> _operators = [];
+  List<String> _optcodes = [];
   Map<String, String> _operatorMap = {};
   String? _selectedOperator;
+  String? _selectedOpCode;
   bool _isLoading = false;
   List<String> rechargeHistory = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _findProvider();
+  }
+
+  // Fetching operators and their opCodes
   Future<void> _findProvider() async {
     setState(() {
       _isLoading = true;
@@ -34,9 +44,8 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> {
       final List<dynamic> jsonResponse = jsonDecode(response.body);
       final List<String> operators = [];
       final Map<String, String> operatorMap = {};
-      
 
-      // Parse the JSON response
+      // Parse the JSON response and store operators and their OpCodes
       for (var item in jsonResponse) {
         final operator = item['Operator'];
         final opCode = item['OpCode'];
@@ -50,11 +59,22 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> {
         _isLoading = false;
       });
     } else {
-      // Handle errors
       setState(() {
         _isLoading = false;
       });
     }
+  }
+
+  int? selectedPlanIndex;
+
+  void onPlanSelect(int index) {
+    setState(() {
+      selectedPlanIndex = index;
+      _selectedOperator = _operators[index];
+       String? opCode = _operatorMap[_selectedOperator];
+      _selectedOpCode = opCode;
+    });
+    print("OPCODE${_selectedOpCode}");
   }
 
   @override
@@ -62,134 +82,122 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Recharge or Pay Mobile Bill', style: TextStyle(color: Colors.black, fontSize: 20)),
+        title: const Text('Recharge or Pay Mobile Bill',
+            style: TextStyle(color: Colors.black, fontSize: 20)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            color: Colors.white
-          ),
+          decoration: const BoxDecoration(color: Colors.white),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Mobile number input field
-            TextField(
-              controller: _mobileController,
-              decoration: InputDecoration(
-                labelText: 'Enter Mobile Number',
-                labelStyle: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+      body: SingleChildScrollView(
+       physics: BouncingScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Mobile number input field
+              TextField(
+                controller: _mobileController,
+                decoration: InputDecoration(
+                  labelText: 'Enter Mobile Number',
+                  labelStyle: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  prefixIcon: const HugeIcon(
+                      icon: HugeIcons.strokeRoundedSmartPhone01,
+                      color: Colors.grey),
                 ),
-                
-                prefixIcon: const HugeIcon(icon: HugeIcons.strokeRoundedSmartPhone01, color: Colors.grey)
+                maxLength: 10,
+                keyboardType: TextInputType.phone,
               ),
-              maxLength: 10,
-              keyboardType: TextInputType.phone,
-
-            ),
-            const SizedBox(height: 20),
-            ListTile(
-              title: const Text("My Mobile Number"),
-              subtitle: const Text("Recharge or pay bill of your number"),
-              trailing: InkWell(
-                onTap: () {
+              const SizedBox(height: 20),
+              const Divider(),
+              const SizedBox(height: 20),
+              const Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                    "Select Operator:",
+                    style: TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  )),
+              const SizedBox(height: 20),
+              // Operators list with their opCodes
+              Container(
+                height: MediaQuery.of(context).size.height / 1.5,
+                child: ListView.builder(
+                   
+                  itemCount: _operators.length,
+                  shrinkWrap: true,
                   
-                },
-                child: const Text("Recharge \n Now", textAlign: TextAlign.center, style: TextStyle(color: Colors.blue),)),
-            ),
-            const Divider(),
-            const SizedBox(height: 20),
-            const Padding(
-              padding: EdgeInsets.only(left: 10),
-              child: Text("My Recharges and Bills"),
-            ),
-             const SizedBox(height: 120),
-            ListView.builder(
-              itemCount: 1,
-              shrinkWrap: true,
-              itemBuilder: (BuildContext context, int index) {
-                if (rechargeHistory.length == 0) {
-                  return const Center(child: Text("No Recharge or Bill History"),);
-                }else{
-                  return const Text("data");
-                }
-                
-              },
-            ),
+                  itemBuilder: (BuildContext context, int index) {
+                    if (_operators.length < 1) {
+                      return const Center(
+                        child: Text("Loading..."),
+                      );
+                    } else {
+                      String operatorName = _operators[index];
+                      String? opCode = _operatorMap[operatorName];
 
-            // Find provider button
-            // ElevatedButton(
-            //   onPressed: _findProvider,
-            //   style: ElevatedButton.styleFrom(
-            //     padding: const EdgeInsets.symmetric(vertical: 14),
-            //     shape: RoundedRectangleBorder(
-            //       borderRadius: BorderRadius.circular(8),
-            //     ),
-            //     backgroundColor: Colors.blue,
-            //   ),
-            //   child: const Padding(
-            //     padding: EdgeInsets.only(left: 10, right: 10),
-            //     child: Text('Find Provider', style: TextStyle(fontSize: 18)),
-            //   ),
-            // ),
-            // const SizedBox(height: 16.0),
-
-            // Show loading spinner or operator dropdown
-            // if (_isLoading)
-            //   const Center(child: CircularProgressIndicator())
-            // else if (_operators.isNotEmpty)
-            //   DropdownButton<String>(
-            //     value: _selectedOperator,
-            //     hint: const Text('Select provider'),
-            //     onChanged: (String? newValue) {
-            //       setState(() {
-            //         _selectedOperator = newValue;
-            //       });
-            //     },
-            //     items: _operators.map<DropdownMenuItem<String>>((String value) {
-            //       return DropdownMenuItem<String>(
-            //         value: value,
-            //         child: Text(value),
-            //       );
-            //     }).toList(),
-            //     isExpanded: true,
-            //     style: const TextStyle(fontSize: 16, color: Colors.black),
-            //     // decoration: BoxDecoration(
-            //     //   borderRadius: BorderRadius.circular(12),
-            //     //   border: Border.all(color: Colors.grey.shade300),
-            //     // ),
-            //   )
-            // else
-            //   const Text(''), // Empty widget placeholder if no operators
-          ],
+                      return ListTile(
+                        onTap: () => onPlanSelect(index),
+                        title: Text(
+                          operatorName,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                       
+                        trailing: selectedPlanIndex == index
+                            ? const Icon(Icons.check_circle, color: Colors.green)
+                            : const Icon(Icons.radio_button_unchecked),
+                      );
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(12.0),
         child: InkWell(
           onTap: () {
-            if (_mobileController.text.length < 10) {
-              Get.showSnackbar(const GetSnackBar(messageText: Text("Please Enter Correct Mobile Number To Continue", style: TextStyle(color: Colors.red),), backgroundColor: Colors.white, duration: Duration(seconds: 3),));
-            }else{
-              Get.to(RechargePlansScreen(optName: "Airtel"));
+            if (_mobileController.text.length < 10 || _selectedOperator == null) {
+              Get.showSnackbar(const GetSnackBar(
+                messageText: Text(
+                  "Please Enter Correct Mobile Number \n or Select Operator To Continue",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.red),
+                ),
+                backgroundColor: Colors.white,
+                duration: Duration(seconds: 3),
+              ));
+            } else {
+              Get.to(RechargePlansScreen(
+                optName: "$_selectedOperator",
+                opCode: "$_selectedOpCode",
+                walletBalance: widget.walletBalance,
+                mobileNumber: _mobileController.text,
+              ));
             }
-            
           },
           child: Container(
             height: 60,
             decoration: BoxDecoration(
-             color: Colors.orange,
+              color: Colors.orange,
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Center(
               child: Text(
                 "Continue",
-                style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                    fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ),
           ),

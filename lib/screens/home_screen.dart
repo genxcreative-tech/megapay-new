@@ -9,10 +9,9 @@ import 'package:megapay_new/screens/profile/profile_screen.dart';
 import 'package:simple_gradient_text/simple_gradient_text.dart';
 
 class HomeScreen extends StatefulWidget {
-   final String? userId;
-  final String? token;
+  
 
-  const HomeScreen({super.key,  this.userId,  this.token});
+  const HomeScreen({super.key, });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -20,7 +19,8 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int selectedIndex = 0;
-
+    String? balance;
+    
   onItemTap(int index) {
     setState(() {
       selectedIndex = index;
@@ -32,8 +32,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   //-----------Balance Check--------------//
-   String? _balance;
+
   bool _isLoading = true;
+  String? _message;
 
   @override
   void initState() {
@@ -44,17 +45,24 @@ class _HomeScreenState extends State<HomeScreen> {
   // Fetch the balance using the provided API method
   Future<void> _fetchBalance() async {
     try {
-      final balanceData = await ApiService().checkBalance(widget.userId ?? "", widget.token ?? "");
+      
+      final balanceData = await ApiService().checkBalance();
       setState(() {
-        _balance = balanceData?['balance'] ?? 'Unavailable'; // Adjust based on API response format
+        var getBalance = balanceData?['balance'] ?? 'Unavailable';
+        double parsedValue = double.parse(getBalance);
+        String formattedValue = parsedValue.toStringAsFixed(2);
+        balance = formattedValue;
+        _message = balanceData?['message'] ?? 'Unavailable'; // Adjust based on API response format
         _isLoading = false;
       });
+      Get.showSnackbar(GetSnackBar(message: _message, duration: const Duration(seconds: 2),));
+    
     } catch (e) {
       setState(() {
-        _balance = 'Error fetching balance';
+        balance = 'Error fetching balance';
         _isLoading = true;
       });
-      Get.showSnackbar(GetSnackBar(message: _balance, duration: const Duration(seconds: 2),));
+      Get.showSnackbar(GetSnackBar(message: balance, duration: const Duration(seconds: 2),));
     }
   }
 
@@ -116,6 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: ListView(
+        
         children: <Widget>[
           // Balance Section with cleaner design
           Container(
@@ -141,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
                    _isLoading
             ? spinkit // Show a loading indicator while fetching balance
             : Text(
-                'Balance: $_balance',
+                'Balance: ₹$balance',
                 style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
       
@@ -182,7 +191,7 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisSpacing: 15,
               crossAxisSpacing: 15,
               children: [
-                _buildServiceTile(context, 'Mobile Recharge', Icons.phone_android, Colors.orange, () => Get.to(const MobileRechargeScreen())),
+                _buildServiceTile(context, 'Mobile Recharge', Icons.phone_android, Colors.orange, () => Get.to( MobileRechargeScreen( walletBalance: balance ?? ""))),
                 _buildServiceTile(context, 'TV Recharge', Icons.tv, Colors.blue, () {}),
                 _buildServiceTile(context, 'Internet Services', Icons.wifi, Colors.green, () {}),
                 _buildServiceTile(context, 'Gas Services', Icons.local_fire_department, Colors.red, () {}),
@@ -202,7 +211,7 @@ class _HomeScreenState extends State<HomeScreen> {
         currentIndex: selectedIndex,
         onTap: onItemTap,
         items:  [
-          CrystalNavigationBarItem(icon: HugeIcons.strokeRoundedHome01,),
+          CrystalNavigationBarItem(icon: HugeIcons.strokeRoundedHome02,),
           CrystalNavigationBarItem(icon: HugeIcons.strokeRoundedDashboardSquareSetting,),
           CrystalNavigationBarItem(icon: HugeIcons.strokeRoundedWorkHistory,),
           CrystalNavigationBarItem(icon: HugeIcons.strokeRoundedUser,),

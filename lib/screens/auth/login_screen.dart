@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:megapay_new/firebase_options.dart';
 import 'package:megapay_new/screens/home_screen.dart';
+import 'package:simple_gradient_text/simple_gradient_text.dart';
 
 import 'register_screen.dart';
 
@@ -45,10 +46,11 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.blue, Colors.indigo],
+            colors: [Colors.white, Colors.white],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -59,15 +61,29 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                const Text(
-                  'Welcome Back',
+                 GradientText(
+                  'LIGHT SPEED PAY',
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    
+                  ),
+                  colors: [
+                    Colors.blue,
+                    Colors.purple,
+                    Colors.orange
+                  ],
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'Sign In to Continue',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey,
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 30),
                 _buildTextField(
                   controller: emailController,
                   label: 'Email',
@@ -90,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                     child: const Text(
                       'Forgot Password?',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Colors.grey),
                     ),
                   ),
                 ),
@@ -105,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: <Widget>[
                     const Text(
                       'Don’t have an account?',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Colors.black),
                     ),
                     TextButton(
                       onPressed: () {
@@ -114,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                       child: Text(
                         'Sign Up',
-                        style: TextStyle(color: Colors.yellow.shade200),
+                        style: TextStyle(color: Colors.amber),
                       ),
                     ),
                   ],

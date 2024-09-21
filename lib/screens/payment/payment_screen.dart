@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:megapay_new/screens/payment/payment_declined_screen.dart';
 import 'package:megapay_new/screens/payment/payment_done_screen.dart';
+import 'package:simple_gradient_text/simple_gradient_text.dart';
 
 class PaymentScreen extends StatefulWidget {
   final String price;
-  PaymentScreen({super.key, required this.price});
+  const PaymentScreen({super.key, required this.price});
 
   @override
   _PaymentScreenState createState() => _PaymentScreenState();
@@ -16,35 +18,28 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   // List of payment options
   final List<Map<String, dynamic>> paymentMethods = [
-    {'method': 'Credit Card', 'icon': Icons.credit_card},
-    {'method': 'Debit Card', 'icon': Icons.payment},
-    {'method': 'UPI', 'icon': Icons.qr_code},
-    {'method': 'Paytm', 'icon': Icons.account_balance_wallet},
+    {'method': 'Credit Card', 'icon': HugeIcons.strokeRoundedCreditCard},
+    {'method': 'Debit Card', 'icon': HugeIcons.strokeRoundedCardExchange01},
+    {'method': 'UPI', 'icon': HugeIcons.strokeRoundedQrCode},
+    {'method': 'Paytm', 'icon': HugeIcons.strokeRoundedWallet01},
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
-          'Mega Pay - Payment',
+          'Pay to Continue',
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: Colors.black,
           ),
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.blue, Colors.indigo],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
+        
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
@@ -74,18 +69,26 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Text(
-                    widget.price,
-                    style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.indigo,
-                    ),
+                  Row(
+                    children: [
+                      Icon(Icons.currency_rupee),
+                      GradientText(
+                        "${widget.price}.00",
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          
+                        ),
+                        colors: [
+                          Colors.blue, Colors.purple, Colors.orange
+                        ],
+                      ),
+                    ],
                   ),
                    const SizedBox(height: 5),
-                  Text(
+                  const Text(
                     "Pay to get your recharge now",
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Colors.grey,
@@ -120,7 +123,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
             onPressed: _processPayment,
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 15),
-              backgroundColor: Colors.blue,
+              backgroundColor: Colors.orange,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
               ),
@@ -148,38 +151,37 @@ class _PaymentScreenState extends State<PaymentScreen> {
   ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Card(
-        elevation: 3,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15),
-        ),
-        child: InkWell(
-          onTap: () {
-            setState(() {
-              selectedPaymentMethod = index;
-            });
-          },
-          borderRadius: BorderRadius.circular(15),
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: selectedPaymentMethod == index
-                  ? Colors.blue
-                  : Colors.grey[300],
-              radius: 25,
-              child: Icon(icon, color: Colors.white, size: 30),
-            ),
-            title: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+      child: Column(
+        children: [
+          InkWell(
+            onTap: () {
+              setState(() {
+                selectedPaymentMethod = index;
+              });
+            },
+            borderRadius: BorderRadius.circular(15),
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundColor: selectedPaymentMethod == index
+                    ? Colors.blue
+                    : Colors.grey[300],
+                radius: 25,
+                child: Icon(icon, color: Colors.white, size: 30),
               ),
+              title: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              trailing: selectedPaymentMethod == index
+                  ? const Icon(Icons.check_circle, color: Colors.blue)
+                  : const Icon(Icons.circle_outlined, color: Colors.grey),
             ),
-            trailing: selectedPaymentMethod == index
-                ? const Icon(Icons.check_circle, color: Colors.blue)
-                : const Icon(Icons.circle_outlined, color: Colors.grey),
           ),
-        ),
+          Divider()
+        ],
       ),
     );
   }
@@ -198,9 +200,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
     // Example logic: Redirect to declined screen if method is not Paytm
     if (selectedMethod != "Paytm") {
-      Get.to(PaymentDeclinedScreen());
+      Get.to(const PaymentDeclinedScreen());
     }else{
-      Get.to(PaymentDoneScreen());
+      Get.to(const PaymentDoneScreen());
     }
   }
 }

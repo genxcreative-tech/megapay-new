@@ -5,6 +5,8 @@ import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class PhoneAuthScreen extends StatefulWidget {
+  const PhoneAuthScreen({super.key});
+
   @override
   _PhoneAuthScreenState createState() => _PhoneAuthScreenState();
 }
@@ -77,7 +79,7 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
   void _startResendCounter() {
     _resendCounter = 30;
     _resendTimer?.cancel();
-    _resendTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         _resendCounter--;
         if (_resendCounter <= 0) {
@@ -111,42 +113,42 @@ class _PhoneAuthScreenState extends State<PhoneAuthScreen> {
               keyboardType: TextInputType.phone,
               decoration: InputDecoration(
                 labelText: 'Enter Phone Number',
-                prefixIcon: Icon(Icons.phone),
-                border: OutlineInputBorder(),
+                prefixIcon: const Icon(Icons.phone),
+                border: const OutlineInputBorder(),
                 suffixIcon: _isOtpSent
                     ? null
                     : IconButton(
-                        icon: Icon(Icons.send),
+                        icon: const Icon(Icons.send),
                         onPressed: _sendOtp,
                       ),
               ),
               enabled: !_isOtpSent,
             ),
             if (_isOtpSent) ...[
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               TextField(
                 controller: _otpController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   labelText: 'Enter OTP',
-                  prefixIcon: Icon(Icons.lock),
-                  border: OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.lock),
+                  border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
-                    icon: Icon(Icons.check),
+                    icon: const Icon(Icons.check),
                     onPressed: _verifyOtp,
                   ),
                 ),
               ),
-              SizedBox(height: 16.0),
+              const SizedBox(height: 16.0),
               Text('Resend OTP in $_resendCounter seconds'),
               if (_resendCounter <= 0)
                 TextButton(
                   onPressed: _sendOtp,
-                  child: Text('Resend OTP'),
+                  child: const Text('Resend OTP'),
                 ),
               TextButton(
                 onPressed: _onWrongNumber,
-                child: Text('Entered wrong number?'),
+                child: const Text('Entered wrong number?'),
               ),
             ],
           ],

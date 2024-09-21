@@ -1,15 +1,18 @@
+import 'package:crystal_navigation_bar/crystal_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:megapay_new/controllers/api_controller.dart';
 import 'package:megapay_new/screens/mobile_recharge_screen.dart';
 import 'package:megapay_new/screens/profile/profile_screen.dart';
+import 'package:simple_gradient_text/simple_gradient_text.dart';
 
 class HomeScreen extends StatefulWidget {
    final String? userId;
   final String? token;
 
-  const HomeScreen({Key? key,  this.userId,  this.token}) : super(key: key);
+  const HomeScreen({super.key,  this.userId,  this.token});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -51,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _balance = 'Error fetching balance';
         _isLoading = true;
       });
-      Get.showSnackbar(GetSnackBar(message: _balance, duration: Duration(seconds: 2),));
+      Get.showSnackbar(GetSnackBar(message: _balance, duration: const Duration(seconds: 2),));
     }
   }
 
@@ -62,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.all(8.0),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          color: index.isEven ? Colors.indigo : Colors.white,
+          color: index.isEven ? Colors.purple : Colors.orange,
           borderRadius: BorderRadius.circular(2)
         ),
       ),
@@ -73,37 +76,39 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],  // Soft background color
+      backgroundColor: Colors.white,  // Soft background color
       appBar: AppBar(
+        
          automaticallyImplyLeading: false,
-        title: const Text(
-          'Mega Pay',
+        title:  GradientText(
+          'Light Speed Pay',
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            
           ),
+          colors: [
+            Colors.blue,
+            Colors.purple,
+            Colors.orange
+          ],
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.blue, Colors.indigo],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+           color: Colors.white
           ),
         ),
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.notifications, color: Colors.white),
+            icon: const Icon(Icons.notifications, color: Colors.black),
             onPressed: () {
               // Action for notifications
             },
           ),
           IconButton(
-            icon: const Icon(Icons.qr_code, color: Colors.white),
+            icon: const Icon(Icons.qr_code, color: Colors.black),
             onPressed: () {
               // Action for QR code scanner
             },
@@ -116,11 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.blue, Colors.indigo],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+              color: Colors.white
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -128,20 +129,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children:  [
-                    Text(
-                      "Wallet Balance",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    SizedBox(height: 8),
+                    // const Text(
+                    //   "Wallet Balance",
+                    //   style: TextStyle(
+                    //     fontSize: 24,
+                    //     fontWeight: FontWeight.bold,
+                    //     color: Colors.grey,
+                    //   ),
+                    // ),
+                    const SizedBox(height: 8),
                    _isLoading
             ? spinkit // Show a loading indicator while fetching balance
             : Text(
                 'Balance: $_balance',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
       
                   ],
@@ -164,8 +165,12 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ),
+          Divider(),
           const SizedBox(height: 20),
-
+          Padding(
+            padding: const EdgeInsets.only(left: 20, bottom: 10),
+            child: Text("Bills & Recharges",style: TextStyle(fontSize: 18),),
+          ),
           // Services Section with modern, clean service tiles
           Padding(
             padding: const EdgeInsets.all(15.0),
@@ -188,17 +193,19 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: NavigationBar(
-        backgroundColor: Colors.white,
-        indicatorColor: Colors.blue,
-        
-        selectedIndex: selectedIndex,
-        onDestinationSelected: onItemTap,
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.home), label: "Home"),
-          NavigationDestination(icon: Icon(Icons.dashboard), label: "Dashboard"),
-          NavigationDestination(icon: Icon(Icons.history), label: "History"),
-          NavigationDestination(icon: Icon(Icons.person), label: "Profile"),
+      bottomNavigationBar: CrystalNavigationBar(
+        backgroundColor: const Color.fromARGB(179, 230, 230, 230),
+         unselectedItemColor: Colors.black.withOpacity(0.5),
+         selectedItemColor: Colors.blue,
+         marginR: EdgeInsets.all(16),
+         borderRadius: 12,
+        currentIndex: selectedIndex,
+        onTap: onItemTap,
+        items:  [
+          CrystalNavigationBarItem(icon: HugeIcons.strokeRoundedHome01,),
+          CrystalNavigationBarItem(icon: HugeIcons.strokeRoundedDashboardSquareSetting,),
+          CrystalNavigationBarItem(icon: HugeIcons.strokeRoundedWorkHistory,),
+          CrystalNavigationBarItem(icon: HugeIcons.strokeRoundedUser,),
         ],
       ),
     );

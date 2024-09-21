@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:get/get.dart';
 import 'package:megapay_new/screens/auth/login_screen.dart';
+import 'package:simple_gradient_text/simple_gradient_text.dart';
 
 class SignUpScreen extends StatelessWidget {
   final TextEditingController _nameController = TextEditingController();
@@ -19,6 +20,8 @@ class SignUpScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();
  final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  SignUpScreen({super.key});
   Future<void> _signUp() async {
     if (_formKey.currentState?.validate() ?? false) {
       try {
@@ -29,7 +32,7 @@ class SignUpScreen extends StatelessWidget {
           email: email,
           password: password,
         );
-         Get.to(LoginScreen()); // Navigate to the home page
+         Get.to(const LoginScreen()); // Navigate to the home page
         await _firestore.collection('users').doc(userCredential.user?.uid).set({
           'name': _nameController.text,
           'phone': _phoneController.text,
@@ -68,7 +71,7 @@ class SignUpScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sign Up'),
+        title: GradientText("Create new account", colors: [Colors.blue, Colors.purple, Colors.orange]),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -189,14 +192,17 @@ class SignUpScreen extends StatelessWidget {
               const SizedBox(height: 20.0),
               ElevatedButton(
                 onPressed: _signUp,
-                child: const Text('Sign Up'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange
+                ),
+                child: const Text('Sign Up', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),),
               ),
               const SizedBox(height: 10.0),
               TextButton(
                 onPressed: () {
-                   Get.to(LoginScreen());// Navigate to the login page
+                   Get.to(const LoginScreen());// Navigate to the login page
                 },
-                child: const Text('Already have an account? Login'),
+                child: const Text('Already have an account? Login', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -220,7 +226,7 @@ class SignUpScreen extends StatelessWidget {
         decoration: InputDecoration(
           labelText: label,
           prefixIcon: Icon(icon),
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
         ),
         obscureText: obscureText,
         keyboardType: keyboardType,

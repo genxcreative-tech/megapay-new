@@ -4,6 +4,8 @@ import 'package:get/get.dart';
 import 'package:megapay_new/screens/auth/login_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
+  const ProfileScreen({super.key});
+
   void logout () async{
     await FirebaseAuth.instance.signOut();
     Get.snackbar(
@@ -15,27 +17,21 @@ class ProfileScreen extends StatelessWidget {
        );
 
               // Navigate to login screen or any other screen as needed
-              Get.offAll(LoginScreen()); // Replace '/login' with the route name of your login screen
+              Get.offAll(const LoginScreen()); // Replace '/login' with the route name of your login screen
             }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
-          'Profile',
-          style: TextStyle(color: Colors.white, fontSize: 22),
+          'My Account',
+          style: TextStyle(color: Colors.black, fontSize: 22),
+          
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.blue, Colors.indigo],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
+        
       ),
      bottomNavigationBar: Padding(
        padding: const EdgeInsets.all(16.0),
@@ -45,9 +41,9 @@ class ProfileScreen extends StatelessWidget {
           height: 60,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            color: Colors.redAccent
+            color: Colors.grey[300]
           ),
-          child: Center(child: Text("Logout", style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),)),
+          child: const Center(child: Text("Logout", style: TextStyle(fontSize: 18, color: Colors.red, fontWeight: FontWeight.bold),)),
          ),
        ),
      ),

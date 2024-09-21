@@ -111,7 +111,7 @@ class _SelectRechargeOperatorState extends State<SelectRechargeOperator> {
         child: ElevatedButton(
           onPressed: _selectedOperator != null
               ? () {
-                  Get.showSnackbar(GetSnackBar(message: 'Continue with operator: $_selectedOperator and OpCode: ${_operatorMap[_selectedOperator]}', duration: Duration(seconds: 2),));
+                  Get.showSnackbar(GetSnackBar(message: 'Continue with operator: $_selectedOperator and OpCode: ${_operatorMap[_selectedOperator]}', duration: const Duration(seconds: 2),));
                   Get.to(RechargePlansScreen(optName: "$_selectedOperator",));
                 }
               : null,

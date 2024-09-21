@@ -12,7 +12,7 @@ class RechargePlansScreen extends StatefulWidget {
 
 class _RechargePlansScreenState extends State<RechargePlansScreen> {
   int? selectedPlanIndex;
-  TextEditingController _amountController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
 
   // Dummy Recharge Plans Data
   final List<Map<String, String>> rechargePlans = [
@@ -73,50 +73,44 @@ class _RechargePlansScreenState extends State<RechargePlansScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
           'Select a Recharge Plan',
-          style: TextStyle(color: Colors.white, fontSize: 22),
+          style: TextStyle(color: Colors.black, fontSize: 22),
         ),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.blue, Colors.indigo],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
+        
       ),
       body: Column(
         children: [
           //------Selected Operator Name-------------//
-          Align(
-              alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 20, left: 20),
-                child: Text(
-                  "Operator:  ${widget.optName}",
-                  style: const TextStyle(fontSize: 22),
-                ),
-              )),
+          // Align(
+          //     alignment: Alignment.centerLeft,
+          //     child: Padding(
+          //       padding: const EdgeInsets.only(top: 20, left: 20),
+          //       child: Text(
+          //         "Operator:  ${widget.optName}",
+          //         style: const TextStyle(fontSize: 22),
+          //       ),
+          //     )),
           //---------Enter Amount------//
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding:  EdgeInsets.only(left: 20, right: 20, top: 20),
             child: Container(
-              height: 60,
+              height: 55,
               decoration: BoxDecoration(
-                  color: Colors.white, borderRadius: BorderRadius.circular(12)),
+                  color: Colors.white, borderRadius: BorderRadius.circular(12),
+                  border: Border.all()),
               child: Center(
                 child: TextField(
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     hintText: 'Enter Amount',
                     prefixIcon: Icon(Icons.currency_rupee), // Placeholder text
                     border: InputBorder.none, // Removes the default border
                   ),
-                  style: TextStyle(fontSize: 18),
+                  style: const TextStyle(fontSize: 18),
                   controller: _amountController,
                   keyboardType: TextInputType.number, // Adjusts the text style
                   onChanged: (value) {
@@ -132,9 +126,9 @@ class _RechargePlansScreenState extends State<RechargePlansScreen> {
             ),
           ),
           const Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: EdgeInsets.only(top: 20),
             child: Text(
-              "Select Plan",
+              "or Select Plan",
               style: TextStyle(fontSize: 18, color: Colors.grey),
             ),
           ),
@@ -144,55 +138,53 @@ class _RechargePlansScreenState extends State<RechargePlansScreen> {
               padding: const EdgeInsets.all(12.0),
               itemCount: rechargePlans.length,
               itemBuilder: (context, index) {
-                return Card(
-                  elevation: 4,
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: ListTile(
-                    onTap: () => onPlanSelect(index),
-                    title: Text(
-                      '${rechargePlans[index]['planName']} - ${rechargePlans[index]['price']}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                return Column(
+                  children: [
+                    ListTile(
+                      onTap: () => onPlanSelect(index),
+                      title: Text(
+                        '${rechargePlans[index]['planName']} - ${rechargePlans[index]['price']}',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
+                      subtitle: Text(
+                        rechargePlans[index]['details']!,
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                      ),
+                      trailing: selectedPlanIndex == index
+                          ? const Icon(Icons.check_circle, color: Colors.green)
+                          : const Icon(Icons.radio_button_unchecked),
                     ),
-                    subtitle: Text(
-                      rechargePlans[index]['details']!,
-                      style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                    ),
-                    trailing: selectedPlanIndex == index
-                        ? const Icon(Icons.check_circle, color: Colors.green)
-                        : const Icon(Icons.radio_button_unchecked),
-                  ),
+                    Divider()
+                  ],
                 );
               },
             ),
           ),
           // Recharge Now Button
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: onRechargeNow,
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                backgroundColor: Colors.blue,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-              child: const Padding(
-                padding: EdgeInsets.only(left: 50, right: 50),
-                child: Text(
-                  'Recharge Now',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
+         
+        ],
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: InkWell(
+          onTap: onRechargeNow,
+          child: Container(
+            height: 60,
+            decoration: BoxDecoration(
+             color: Colors.orange,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Center(
+              child: Text(
+                "Continue",
+                style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }

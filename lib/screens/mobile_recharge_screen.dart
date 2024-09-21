@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:hugeicons/hugeicons.dart';
 import 'package:megapay_new/screens/payment/payment_screen.dart';
 import 'package:megapay_new/screens/select_operator_screen.dart';
 
@@ -21,7 +22,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> {
   Map<String, String> _operatorMap = {};
   String? _selectedOperator;
   bool _isLoading = false;
-
+  List<String> rechargeHistory = [];
   Future<void> _findProvider() async {
     setState(() {
       _isLoading = true;
@@ -33,6 +34,7 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> {
       final List<dynamic> jsonResponse = jsonDecode(response.body);
       final List<String> operators = [];
       final Map<String, String> operatorMap = {};
+      
 
       // Parse the JSON response
       for (var item in jsonResponse) {
@@ -58,18 +60,14 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Mobile Recharge', style: TextStyle(color: Colors.white, fontSize: 22)),
+        title: const Text('Recharge or Pay Mobile Bill', style: TextStyle(color: Colors.black, fontSize: 20)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         flexibleSpace: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.blue, Colors.indigo],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
+            color: Colors.white
           ),
         ),
       ),
@@ -88,13 +86,41 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 
-                prefixIcon: Icon(Icons.phone)
+                prefixIcon: const HugeIcon(icon: HugeIcons.strokeRoundedSmartPhone01, color: Colors.grey)
               ),
               maxLength: 10,
               keyboardType: TextInputType.phone,
 
             ),
             const SizedBox(height: 20),
+            ListTile(
+              title: const Text("My Mobile Number"),
+              subtitle: const Text("Recharge or pay bill of your number"),
+              trailing: InkWell(
+                onTap: () {
+                  
+                },
+                child: const Text("Recharge \n Now", textAlign: TextAlign.center, style: TextStyle(color: Colors.blue),)),
+            ),
+            const Divider(),
+            const SizedBox(height: 20),
+            const Padding(
+              padding: EdgeInsets.only(left: 10),
+              child: Text("My Recharges and Bills"),
+            ),
+             const SizedBox(height: 120),
+            ListView.builder(
+              itemCount: 1,
+              shrinkWrap: true,
+              itemBuilder: (BuildContext context, int index) {
+                if (rechargeHistory.length == 0) {
+                  return const Center(child: Text("No Recharge or Bill History"),);
+                }else{
+                  return const Text("data");
+                }
+                
+              },
+            ),
 
             // Find provider button
             // ElevatedButton(
@@ -147,16 +173,17 @@ class _MobileRechargeScreenState extends State<MobileRechargeScreen> {
         padding: const EdgeInsets.all(12.0),
         child: InkWell(
           onTap: () {
-            Get.to(const SelectRechargeOperator());
+            if (_mobileController.text.length < 10) {
+              Get.showSnackbar(const GetSnackBar(messageText: Text("Please Enter Correct Mobile Number To Continue", style: TextStyle(color: Colors.red),), backgroundColor: Colors.white, duration: Duration(seconds: 3),));
+            }else{
+              Get.to(RechargePlansScreen(optName: "Airtel"));
+            }
+            
           },
           child: Container(
             height: 60,
             decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Colors.blue, Colors.indigo],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
+             color: Colors.orange,
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Center(

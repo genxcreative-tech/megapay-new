@@ -8,26 +8,19 @@ class PaymentDoneScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
-          'Payment Success',
+          'Payment Status',
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: Colors.black,
           ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.blue, Colors.purple],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
+        
       ),
       body: Center(
         child: Column(
@@ -49,7 +42,8 @@ class PaymentDoneScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             const Text(
-              'Thank you for your payment.',
+              'Thank you \n Your recharge has been proceed',
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 18,
                 color: Colors.black54,
@@ -61,7 +55,7 @@ class PaymentDoneScreen extends StatelessWidget {
                 Get.to(const HomeScreen()); // Navigate back to home page
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
+                backgroundColor: Colors.orange,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),

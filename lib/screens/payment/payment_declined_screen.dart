@@ -8,26 +8,19 @@ class PaymentDeclinedScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text(
-          'Payment Failed',
+          'Payment Status',
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: Colors.white,
+            color: Colors.black,
           ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.blue, Colors.purple],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
+        
       ),
       body: Center(
         child: Column(
@@ -49,7 +42,8 @@ class PaymentDeclinedScreen extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             const Text(
-              'Unfortunately, your payment was not successful.',
+              'Unfortunately, \n your payment was not successful.',
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 18,
                 color: Colors.black54,
@@ -58,7 +52,7 @@ class PaymentDeclinedScreen extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                Get.offAll(HomeScreen()); // Navigate back to payment page
+                Get.offAll(const HomeScreen()); // Navigate back to payment page
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
@@ -77,7 +71,7 @@ class PaymentDeclinedScreen extends StatelessWidget {
             const SizedBox(height: 20),
             TextButton(
               onPressed: () {
-                Get.offAll(HomeScreen()); // Navigate to home page
+                Get.offAll(const HomeScreen()); // Navigate to home page
               },
               child: const Text(
                 'Cancel and Return to Home',

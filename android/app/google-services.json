@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "202309907942",
+    "project_id": "megapay-688ee",
+    "storage_bucket": "megapay-688ee.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:202309907942:android:2cf23f8c3a7773226e1227",
+        "android_client_info": {
+          "package_name": "com.example.megapay_new"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAI-45WgSu79PSJgCZVmTwkXP985qZ2P1M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
